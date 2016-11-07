@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>cod_grid</title>
+
+    <script type="text/javascript" src="/apps/2.1/sdk.js"></script>
+
+    <script type="text/javascript">
+        Rally.onReady(function () {
+                var Ext=window.Ext4||window.Ext;Ext.define("CustomApp",{extend:"Rally.app.App",componentCls:"app",launch:function(){var that=this;this._grid=null,this._getTreeStore()},_getTreeStore:function(){var model="PortfolioItem/Feature";null!==this._grid&&this._grid.destroy(),Ext.create("Rally.data.wsapi.TreeStoreBuilder").build({models:[model],listeners:{load:function(store){var records=store.getRootNode().childNodes;this._calculateScore(records)},update:function(store,rec,modified,opts){this._calculateScore([rec])},scope:this},enableHierarchy:!0}).then({success:this._addRallygridBoard,scope:this})},_addRallygridBoard:function(store,records){var modelNames="PortfolioItem/Feature",context=this.getContext();this._grid=this.add({xtype:"rallygridboard",context:context,modelNames:[modelNames],toggleState:"grid",stateful:!1,plugins:[{ptype:"rallygridboardcustomfiltercontrol",filterChildren:!1,filterControlConfig:{modelNames:[modelNames],stateful:!0,stateId:context.getScopedStateId("custom-filter-example")}},{ptype:"rallygridboardfieldpicker",headerPosition:"left",modelNames:[modelNames],stateful:!0,stateId:context.getScopedStateId("columns-example")},{ptype:"rallygridboardactionsmenu",menuItems:[{text:"Export...",handler:function(){window.location=Rally.ui.grid.GridCsvExport.buildCsvExportUrl(this.down("rallygridboard").getGridOrBoard())},scope:this}],buttonConfig:{iconCls:"icon-export"}}],gridConfig:{store:store,columnCfgs:["Name","TimeCriticality","RROEValue","UserBusinessValue","ValueScore"]},height:this.getHeight()})},_calculateScore:function(records){var that=this;Ext.Array.each(records,function(feature){var timeValue=feature.data.TimeCriticality,OERR=feature.data.RROEValue,userValue=feature.data.UserBusinessValue,oldValueScore=feature.data.ValueScore,newValueScore;newValueScore=userValue+timeValue+OERR,oldValueScore!==newValueScore&&feature.set("ValueScore",newValueScore)})}});
+
+            Rally.launchApp('CustomApp', {
+                name:"cod_grid",
+	            parentRepos:""
+            });
+
+        });
+    </script>
+
+
+    <style type="text/css">
+        
+    </style>
+</head>
+<body>
+</body>
+</html>
